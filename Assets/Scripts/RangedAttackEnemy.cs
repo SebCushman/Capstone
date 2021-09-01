@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RangedAttack : MonoBehaviour
+public class RangedAttackEnemy : MonoBehaviour
 {
     public GameObject owner;
     public float damage = 1.0f;

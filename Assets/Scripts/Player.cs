@@ -11,15 +11,19 @@ public class Player : MonoBehaviour
     public int level = 1;
     public int currentXP = 0;
 
-    public int maxHealth = 10;
+    public int maxHealth = 20;
     public int health;
     public HealthBar healthBar;
     public ExperienceBar xpBar;
     
     public float moveSpeed = 5.0f;
-    public float meleeDamage = 1.0f;
-    public float rangedDamage = 1.0f;
+    public float meleeDamage = 2.0f;
+    public float rangedDamage = 2.0f;
     public bool isMelee = false;
+
+    public float fireRate;
+    public float meleeHold;
+    public float cooldown;
 
     public Rigidbody2D rb;
     public Camera cam;
@@ -33,6 +37,7 @@ public class Player : MonoBehaviour
         healthBar.SetmaxHealth(maxHealth);
         xpBar.SetmaxXP(10);
         melee.SetActive(false);
+        fireRate = 0.5f;
     }
 
     void Update()
@@ -43,40 +48,61 @@ public class Player : MonoBehaviour
 
         mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
 
+        if (fireRate > cooldown)
+        {
+            cooldown += Time.deltaTime;
+        }
+
         if (Input.GetButtonDown("Fire1"))
         {
             //melee.SetActive(true);
             if (!isMelee)
             {
+                meleeHold = 0.25f;
                 isMelee = true;
+                cooldown = 0;
             }
         }
 
-        if (Input.GetButtonUp("Fire1"))
-        {
-            //melee.SetActive(true);
-            if (isMelee)
-            {
-                isMelee = false;
-            }
-        }
+        //if (Input.GetButtonUp("Fire1"))
+        //{
+        //    //melee.SetActive(true);
+        //    if (isMelee)
+        //    {
+        //        isMelee = false;
+        //    }
+        //}
 
         if (melee != null && isMelee != melee.activeInHierarchy)
         {
             melee.SetActive(isMelee);
         }
 
-        if (Input.GetButtonDown("Fire2"))
+        meleeHold -= Time.deltaTime;
+        if (meleeHold <= 0)
+        {
+            melee.SetActive(false);
+            isMelee = false;
+            meleeHold = 0;
+        }
+
+        if (Input.GetButtonDown("Fire2") && !(fireRate > cooldown))
         {
             GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
             bullet.GetComponent<RangedAttack>().owner = this.gameObject;
             bullet.GetComponent<RangedAttack>().damage *= rangedDamage;
             Shoot(30, Color.green, bullet);
+            cooldown = 0;
         }
 
         if (Input.GetKeyDown(KeyCode.K))
         {
             TakeDamage(3);
+        }
+
+        if(currentXP >= xpBar.slider.maxValue)
+        {
+            LevelUp();
         }
     }
 
@@ -100,6 +126,17 @@ public class Player : MonoBehaviour
         rb.AddForce(firePoint.up * bulletForce, ForceMode2D.Impulse);
     }
 
+    void LevelUp()
+    {
+        currentXP -= (int)xpBar.slider.maxValue;
+        xpBar.SetmaxXP((int)xpBar.slider.maxValue * 2);
+        meleeDamage *= 3f;
+        rangedDamage *= 3f;
+        maxHealth = (int)(maxHealth * 1.5f);
+        health = maxHealth;
+        healthBar.SetHealth(health, maxHealth);
+    }
+
     void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.tag == "RangedAttack")
@@ -109,6 +146,14 @@ public class Player : MonoBehaviour
         else if(other.gameObject.tag == "Enemy")
         {
             TakeDamage(2);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "MeleeAttack")
+        {
+            TakeDamage((int)FindObjectOfType<Enemy>().meleeDamage);
         }
     }
 
