@@ -7,6 +7,7 @@ TagManager:
   - Enemy
   - RangedAttack
   - MeleeAttack
+  - NPC
   layers:
   - Default
   - TransparentFX

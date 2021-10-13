@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
     public float meleeDamage = 2.0f;
     public float rangedDamage = 2.0f;
     public bool isMelee = false;
+    public bool isDialogue = false;
 
     public float fireRate;
     public float meleeHold;
