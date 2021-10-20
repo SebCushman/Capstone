@@ -6,6 +6,8 @@ public class Player : MonoBehaviour
 {
     public Transform firePoint;
     public GameObject bulletPrefab;
+    public GameObject wavePrefab;
+    public GameObject aoePrefab;
     public GameObject melee;
 
     public int level = 1;
@@ -15,6 +17,8 @@ public class Player : MonoBehaviour
     public int health;
     public HealthBar healthBar;
     public ExperienceBar xpBar;
+
+    public Quest quests;
     
     public float moveSpeed = 5.0f;
     public float meleeDamage = 2.0f;
@@ -23,8 +27,12 @@ public class Player : MonoBehaviour
     public bool isDialogue = false;
 
     public float fireRate;
+    public float waveRate;
+    public float aoeRate;
     public float meleeHold;
     public float cooldown;
+    public float waveCooldown;
+    public float aoeCooldown;
 
     public Rigidbody2D rb;
     public Camera cam;
@@ -39,6 +47,11 @@ public class Player : MonoBehaviour
         xpBar.SetmaxXP(10);
         melee.SetActive(false);
         fireRate = 0.5f;
+        cooldown = fireRate;
+        waveRate = 2.0f;
+        waveCooldown = waveRate;
+        aoeRate = 5.0f;
+        aoeCooldown = aoeRate;
     }
 
     void Update()
@@ -52,6 +65,16 @@ public class Player : MonoBehaviour
         if (fireRate > cooldown)
         {
             cooldown += Time.deltaTime;
+        }
+
+        if (waveRate > waveCooldown)
+        {
+            waveCooldown += Time.deltaTime;
+        }
+
+        if (aoeRate > aoeCooldown)
+        {
+            aoeCooldown += Time.deltaTime;
         }
 
         if (Input.GetButtonDown("Fire1"))
@@ -96,6 +119,27 @@ public class Player : MonoBehaviour
             cooldown = 0;
         }
 
+        if (Input.GetKeyDown(KeyCode.Alpha1) && !(waveRate > waveCooldown))
+        {
+            GameObject wave = Instantiate(wavePrefab, firePoint.position, firePoint.rotation);
+            wave.GetComponent<RangedAttack>().owner = this.gameObject;
+            wave.GetComponent<RangedAttack>().damage *= rangedDamage;
+            ShootWave(20, Color.yellow, wave);
+            waveCooldown = 0;
+            Destroy(wave, 0.25f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2) && !(aoeRate > aoeCooldown))
+        {
+            GameObject aoe = Instantiate(aoePrefab, mousePos, firePoint.rotation);
+            aoe.GetComponent<RangedAttack>().owner = this.gameObject;
+            aoe.GetComponent<RangedAttack>().damage *= rangedDamage;
+            ShootAOE(Color.yellow, aoe);
+            //aoe.transform.localScale += new Vector3(0.2f, 0.2f, 0f);
+            aoeCooldown = 0;
+            Destroy(aoe, 1f);
+        }
+
         if (Input.GetKeyDown(KeyCode.K))
         {
             TakeDamage(3);
@@ -105,6 +149,8 @@ public class Player : MonoBehaviour
         {
             LevelUp();
         }
+
+        
     }
 
     void FixedUpdate()
@@ -125,6 +171,28 @@ public class Player : MonoBehaviour
         spriteRenderer.color = color;
 
         rb.AddForce(firePoint.up * bulletForce, ForceMode2D.Impulse);
+    }
+
+    void ShootWave(float waveForce, Color color, GameObject wave)
+    {
+        Rigidbody2D rb = wave.GetComponent<Rigidbody2D>();
+        SpriteRenderer spriteRenderer = wave.GetComponent<SpriteRenderer>();
+
+        spriteRenderer.color = color;
+
+        rb.AddForce(firePoint.up * waveForce, ForceMode2D.Impulse);
+    }
+
+    void ShootAOE(Color color, GameObject aoe)
+    {
+        Rigidbody2D rb = aoe.GetComponent<Rigidbody2D>();
+        SpriteRenderer spriteRenderer = aoe.GetComponent<SpriteRenderer>();
+
+        spriteRenderer.color = color;
+
+        //aoe.gameObject.transform.localScale;
+
+        //rb.AddForce(firePoint.up * waveForce, ForceMode2D.Impulse);
     }
 
     void LevelUp()

@@ -7,12 +7,23 @@ public class RangedAttack : MonoBehaviour
     public GameObject owner;
     public float damage = 1.0f;
 
+    public bool isWave = false;
+
+    private void FixedUpdate()
+    {
+        if(gameObject.tag == "AOE")
+        {
+            transform.localScale += new Vector3(0.15f, 0.15f, 0f);
+        }
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Destroy(this.gameObject);
-        //if (collision.gameObject.tag == "Enemy")
-        //{
-            
-        //}
+        if (!isWave)
+        {
+            Destroy(this.gameObject);
+        }
     }
+
+    
 }

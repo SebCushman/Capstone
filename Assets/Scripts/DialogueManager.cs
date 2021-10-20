@@ -9,6 +9,8 @@ public class DialogueManager : MonoBehaviour
     public Text sentenceText;
     public GameObject textBox;
 
+    public Dialogue currentDialogue;
+
     public Queue<string> conversation;
     public float timer;
     public float refresh;
@@ -38,6 +40,7 @@ public class DialogueManager : MonoBehaviour
     {
         //Debug.Log($"Talking to {dialogue.NPC_name}");
         nameText.text = dialogue.NPC_name;
+        currentDialogue = dialogue;
 
         conversation.Clear();
 
@@ -78,8 +81,16 @@ public class DialogueManager : MonoBehaviour
 
     public void EndConversation()
     {
-        FindObjectOfType<Player>().isDialogue = false;
         textBox.SetActive(false);
+        if (currentDialogue.owner.hasQuest)
+        {
+            currentDialogue.owner.OpenQuestWindow();
+        }
+        else
+        {
+            FindObjectOfType<Player>().isDialogue = false;
+        }
+        
         //Debug.Log("Finished conversation");
     }
 }

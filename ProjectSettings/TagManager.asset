@@ -8,6 +8,7 @@ TagManager:
   - RangedAttack
   - MeleeAttack
   - NPC
+  - AOE
   layers:
   - Default
   - TransparentFX

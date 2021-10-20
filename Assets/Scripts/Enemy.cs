@@ -168,6 +168,11 @@ public class Enemy : MonoBehaviour
         {
             TakeDamage((int)FindObjectOfType<Player>().meleeDamage);
         }
+
+        if(collision.gameObject.tag == "RangedAttack" || collision.gameObject.tag == "AOE")
+        {
+            TakeDamage((int)collision.gameObject.GetComponent<RangedAttack>().damage);
+        }
     }
 
     void TakeDamage(int damage)
@@ -185,6 +190,15 @@ public class Enemy : MonoBehaviour
     void Die()
     {
         FindObjectOfType<Player>().currentXP += 1;
+        if (FindObjectOfType<Player>().quests.isActive)
+        {
+            FindObjectOfType<Player>().quests.goal.EnemyKilled();
+            if (FindObjectOfType<Player>().quests.goal.IsFinished())
+            {
+                FindObjectOfType<Player>().currentXP += FindObjectOfType<Player>().quests.xpReward;
+                FindObjectOfType<Player>().quests.Complete();
+            }
+        }
         Destroy(gameObject);
     }
 }
