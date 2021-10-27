@@ -244,6 +244,6 @@ public class Player : MonoBehaviour
     {
         Destroy(gameObject);
         //Display Lose screen
-        //FindObjectOfType<Game>().GameOver();
+        FindObjectOfType<Game>().GameOver();
     }
 }
