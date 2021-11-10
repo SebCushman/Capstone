@@ -150,7 +150,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: fdecf63547f21fa47a0ec2a8bd317814, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -172,7 +172,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0.43651062, b: 0.990566, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -270,6 +270,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogue:
     NPC_name: 
+    owner: {fileID: 0}
     sentences: []
   hasQuest: 0
   quest:
@@ -277,12 +278,16 @@ MonoBehaviour:
     title: 
     description: 
     xpReward: 0
-    numKills: 0
+    goal:
+      goalType: 0
+      finishAmount: 0
+      currentAmount: 0
   player: {fileID: 0}
   questWindow: {fileID: 0}
   questName: {fileID: 0}
   questDescription: {fileID: 0}
   questReward: {fileID: 0}
+  questIndicator: {fileID: 0}
 --- !u!1 &2855129295099272840
 GameObject:
   m_ObjectHideFlags: 0
