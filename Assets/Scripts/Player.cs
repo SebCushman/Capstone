@@ -17,6 +17,9 @@ public class Player : MonoBehaviour
     public int health;
     public HealthBar healthBar;
     public ExperienceBar xpBar;
+    public AbilityBar waveBar;
+    public AbilityBar aoeBar;
+    public AbilityBar healBar;
 
     public Quest quests;
     
@@ -29,10 +32,12 @@ public class Player : MonoBehaviour
     public float fireRate;
     public float waveRate;
     public float aoeRate;
+    public float healRate;
     public float meleeHold;
     public float cooldown;
     public float waveCooldown;
     public float aoeCooldown;
+    public float healCooldown;
 
     public Rigidbody2D rb;
     public Camera cam;
@@ -45,18 +50,27 @@ public class Player : MonoBehaviour
         health = maxHealth;
         healthBar.SetmaxHealth(maxHealth);
         xpBar.SetmaxXP(10);
+        xpBar.levelText.text = level.ToString();
         melee.SetActive(false);
         fireRate = 0.5f;
         cooldown = fireRate;
         waveRate = 2.0f;
         waveCooldown = waveRate;
+        waveBar.SetCooldown(waveRate);
         aoeRate = 5.0f;
         aoeCooldown = aoeRate;
+        aoeBar.SetCooldown(aoeRate);
+        healRate = 5.0f;
+        healCooldown = healRate;
+        healBar.SetCooldown(healRate);
     }
 
     void Update()
     {
         xpBar.SetXP(currentXP);
+        waveBar.SetCurrentTimer(waveCooldown);
+        aoeBar.SetCurrentTimer(aoeCooldown);
+        healBar.SetCurrentTimer(healCooldown);
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
 
@@ -75,6 +89,11 @@ public class Player : MonoBehaviour
         if (aoeRate > aoeCooldown)
         {
             aoeCooldown += Time.deltaTime;
+        }
+
+        if (healRate > healCooldown)
+        {
+            healCooldown += Time.deltaTime;
         }
 
         if (Input.GetButtonDown("Fire1"))
@@ -140,9 +159,10 @@ public class Player : MonoBehaviour
             Destroy(aoe, 1f);
         }
 
-        if (Input.GetKeyDown(KeyCode.K))
+        if (Input.GetKeyDown(KeyCode.Alpha3) && !(healRate > healCooldown))
         {
-            TakeDamage(3);
+            HealDamage((int)(maxHealth * .25));
+            healCooldown = 0;
         }
 
         if(currentXP >= xpBar.slider.maxValue)
@@ -204,6 +224,7 @@ public class Player : MonoBehaviour
         maxHealth = (int)(maxHealth * 1.5f);
         health = maxHealth;
         healthBar.SetHealth(health, maxHealth);
+        xpBar.levelText.text = level.ToString();
     }
 
     void OnCollisionEnter2D(Collision2D other)
@@ -238,6 +259,15 @@ public class Player : MonoBehaviour
         {
             Die();
         }
+    }
+
+    void HealDamage(int damage)
+    {
+        //FindObjectOfType<AudioManager>().Play("Hit");
+        health += damage;
+        healthBar.SetHealth(health, maxHealth);
+
+        //Heal Animation
     }
 
     void Die()

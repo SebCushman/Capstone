@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ public class ExperienceBar : MonoBehaviour
     public Slider slider;
     //public Gradient gradient;
     public Image fill;
+    public TMP_Text levelText;
 
     public void SetmaxXP(int xp)
     {
