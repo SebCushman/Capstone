@@ -69,7 +69,7 @@ public class Player : MonoBehaviour
         healCooldown = healRate;
         healBar.SetCooldown(healRate);
 
-        for(int i = 1; i <= level; i++)
+        for(int i = 1; i < 20; i++)
         {
             LevelUp();
         }
@@ -223,7 +223,12 @@ public class Player : MonoBehaviour
             healCooldown = 0;
         }
 
-        if(currentXP >= toLevel)//xpBar.slider.maxValue)
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            currentXP += 100;
+        }
+
+        if (currentXP >= toLevel)//xpBar.slider.maxValue)
         {
             LevelUp();
         }
@@ -234,7 +239,8 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
-        rbFirePoint.MovePosition(rbFirePoint.position + movement * moveSpeed * Time.fixedDeltaTime);
+        //rbFirePoint.MovePosition(rbFirePoint.position + movement * moveSpeed * Time.fixedDeltaTime);
+        rbFirePoint.position = rb.position;
 
         Vector2 direction = mousePos - rb.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
@@ -287,11 +293,13 @@ public class Player : MonoBehaviour
         currentXP = 0;
         xpBar.SetmaxXP((int)(xpBar.slider.maxValue * 1.25f));
         toLevel = (int)xpBar.slider.maxValue;
+        level++;
         meleeDamage += 3f;
         rangedDamage += 3f;
         maxHealth = (int)(maxHealth * 1.25f);
         health = maxHealth;
         healthBar.SetHealth(health, maxHealth);
+        healthBar.SetmaxHealth(maxHealth);
         xpBar.levelText.text = level.ToString();
     }
 

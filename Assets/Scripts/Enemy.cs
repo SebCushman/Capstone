@@ -41,7 +41,7 @@ public class Enemy : MonoBehaviour
         target = FindObjectOfType<Player>().gameObject;
         cooldown = fireRate;
         health = maxHealth;
-        xpValue = level * xpValue;
+        //xpValue = level * xpValue;
         rb = this.GetComponent<Rigidbody2D>();
         if (isRanged)
         {
@@ -53,7 +53,7 @@ public class Enemy : MonoBehaviour
             attackRange = 2;
             minRange = 1;
         }
-        for (int i = 1; i <= level; i++)
+        for (int i = 1; i <= 15; i++)
         {
             LevelUp();
         }
@@ -165,12 +165,14 @@ public class Enemy : MonoBehaviour
         if ((FindObjectOfType<Player>().transform.position - transform.position).magnitude <= minRange)
         {
             rb.MovePosition((Vector2)transform.position - movement * speed * Time.fixedDeltaTime);
-            rbFirePoint.MovePosition((Vector2)transform.position - movement * speed * Time.fixedDeltaTime);
+            //rbFirePoint.MovePosition((Vector2)transform.position - movement * speed * Time.fixedDeltaTime);
+            rbFirePoint.position = rb.position;
         }
         else
         {
             rb.MovePosition((Vector2)transform.position + movement * speed * Time.fixedDeltaTime);
-            rbFirePoint.MovePosition((Vector2)transform.position + movement * speed * Time.fixedDeltaTime);
+            //rbFirePoint.MovePosition((Vector2)transform.position + movement * speed * Time.fixedDeltaTime);
+            rbFirePoint.position = rb.position;
         }
     }
 
@@ -179,12 +181,14 @@ public class Enemy : MonoBehaviour
         if ((FindObjectOfType<Player>().transform.position - transform.position).magnitude <= minRange)
         {
             rb.MovePosition((Vector2)transform.position - movement * speed * Time.fixedDeltaTime);
-            rbFirePoint.MovePosition((Vector2)transform.position - movement * speed * Time.fixedDeltaTime);
+            //rbFirePoint.MovePosition((Vector2)transform.position - movement * speed * Time.fixedDeltaTime);
+            rbFirePoint.position = rb.position;
         }
         else
         {
             rb.MovePosition((Vector2)transform.position + movement * speed * Time.fixedDeltaTime);
-            rbFirePoint.MovePosition((Vector2)transform.position + movement * speed * Time.fixedDeltaTime);
+            //rbFirePoint.MovePosition((Vector2)transform.position + movement * speed * Time.fixedDeltaTime);
+            rbFirePoint.position = rb.position;
         }
     }
 
@@ -253,12 +257,12 @@ public class Enemy : MonoBehaviour
         rangedDamage += 3f;
         maxHealth = (int)(maxHealth * 1.25f);
         health = maxHealth;
-        xpValue *= (int)(xpValue * 1.25f);
+        xpValue = (int)(xpValue * 1.25f);
     }
 
     void Die()
     {
-        FindObjectOfType<Player>().currentXP += 1;
+        FindObjectOfType<Player>().currentXP += xpValue;
         if (FindObjectOfType<Player>().quests.isActive)
         {
             FindObjectOfType<Player>().quests.goal.EnemyKilled();
