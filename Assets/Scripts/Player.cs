@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
 
     public int level = 1;
     public int currentXP = 0;
+    public int toLevel = 0;
 
     public int maxHealth = 20;
     public int health;
@@ -40,10 +41,14 @@ public class Player : MonoBehaviour
     public float healCooldown;
 
     public Rigidbody2D rb;
+    public Rigidbody2D rbFirePoint;
     public Camera cam;
+    public Animator animator;
 
     Vector2 movement;
     Vector2 mousePos;
+
+    public int lastDirection = 3;
 
     private void Start()
     {
@@ -52,7 +57,7 @@ public class Player : MonoBehaviour
         xpBar.SetmaxXP(10);
         xpBar.levelText.text = level.ToString();
         melee.SetActive(false);
-        fireRate = 0.5f;
+        fireRate = 0.25f;
         cooldown = fireRate;
         waveRate = 2.0f;
         waveCooldown = waveRate;
@@ -63,6 +68,11 @@ public class Player : MonoBehaviour
         healRate = 5.0f;
         healCooldown = healRate;
         healBar.SetCooldown(healRate);
+
+        for(int i = 1; i <= level; i++)
+        {
+            LevelUp();
+        }
     }
 
     void Update()
@@ -73,6 +83,53 @@ public class Player : MonoBehaviour
         healBar.SetCurrentTimer(healCooldown);
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
+
+        animator.SetFloat("Horizontal", movement.x);
+        animator.SetFloat("Vertical", movement.y);
+        animator.SetFloat("Speed", movement.sqrMagnitude);
+
+        
+
+        if(movement.x > 0.01f)
+        {
+            lastDirection = 2;
+            //animator.SetBool("Right", true);
+        }
+        else if(movement.x < -0.01f)
+        {
+            lastDirection = 4;
+            //animator.SetBool("Right", false);
+        }
+        else if (movement.y > 0.01f)
+        {
+            lastDirection = 1;
+            //animator.SetBool("Up", true);
+        }
+        else if (movement.y < -0.01f)
+        {
+            lastDirection = 3;
+            //animator.SetBool("Up", false);
+        }
+
+        switch (lastDirection)
+        {
+            case 1:
+                animator.SetBool("Right", false);
+                animator.SetBool("Up", true);
+                break;
+            case 2:
+                animator.SetBool("Up", true);
+                animator.SetBool("Right", true);
+                break;
+            case 3:
+                animator.SetBool("Right", true);
+                animator.SetBool("Up", false);
+                break;
+            case 4:
+                animator.SetBool("Up", false);
+                animator.SetBool("Right", false);
+                break;
+        }
 
         mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
 
@@ -101,7 +158,7 @@ public class Player : MonoBehaviour
             //melee.SetActive(true);
             if (!isMelee)
             {
-                meleeHold = 0.25f;
+                meleeHold = 0.1f;
                 isMelee = true;
                 cooldown = 0;
             }
@@ -162,10 +219,11 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha3) && !(healRate > healCooldown))
         {
             HealDamage((int)(maxHealth * .25));
+            FindObjectOfType<AudioManager>().Play("Heal");
             healCooldown = 0;
         }
 
-        if(currentXP >= xpBar.slider.maxValue)
+        if(currentXP >= toLevel)//xpBar.slider.maxValue)
         {
             LevelUp();
         }
@@ -176,11 +234,13 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+        rbFirePoint.MovePosition(rbFirePoint.position + movement * moveSpeed * Time.fixedDeltaTime);
 
         Vector2 direction = mousePos - rb.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
 
-        rb.rotation = angle;
+        rbFirePoint.rotation = angle;
+        //firePoint.RotateAround(this.transform.position, new Vector3(0f, 1f, 0f), angle);
     }
 
     void Shoot(float bulletForce, Color color, GameObject bullet)
@@ -191,6 +251,9 @@ public class Player : MonoBehaviour
         spriteRenderer.color = color;
 
         rb.AddForce(firePoint.up * bulletForce, ForceMode2D.Impulse);
+        //rb.AddForce(mousePos * bulletForce, ForceMode2D.Impulse);
+
+        FindObjectOfType<AudioManager>().Play("Fire");
     }
 
     void ShootWave(float waveForce, Color color, GameObject wave)
@@ -201,6 +264,7 @@ public class Player : MonoBehaviour
         spriteRenderer.color = color;
 
         rb.AddForce(firePoint.up * waveForce, ForceMode2D.Impulse);
+        FindObjectOfType<AudioManager>().Play("Wave");
     }
 
     void ShootAOE(Color color, GameObject aoe)
@@ -210,6 +274,8 @@ public class Player : MonoBehaviour
 
         spriteRenderer.color = color;
 
+        FindObjectOfType<AudioManager>().Play("AOE");
+
         //aoe.gameObject.transform.localScale;
 
         //rb.AddForce(firePoint.up * waveForce, ForceMode2D.Impulse);
@@ -217,11 +283,13 @@ public class Player : MonoBehaviour
 
     void LevelUp()
     {
-        currentXP -= (int)xpBar.slider.maxValue;
-        xpBar.SetmaxXP((int)xpBar.slider.maxValue * 2);
-        meleeDamage *= 3f;
-        rangedDamage *= 3f;
-        maxHealth = (int)(maxHealth * 1.5f);
+        //currentXP -= (int)xpBar.slider.maxValue;
+        currentXP = 0;
+        xpBar.SetmaxXP((int)(xpBar.slider.maxValue * 1.25f));
+        toLevel = (int)xpBar.slider.maxValue;
+        meleeDamage += 3f;
+        rangedDamage += 3f;
+        maxHealth = (int)(maxHealth * 1.25f);
         health = maxHealth;
         healthBar.SetHealth(health, maxHealth);
         xpBar.levelText.text = level.ToString();
@@ -244,6 +312,7 @@ public class Player : MonoBehaviour
         if (collision.gameObject.tag == "MeleeAttack")
         {
             TakeDamage((int)FindObjectOfType<Enemy>().meleeDamage);
+            FindObjectOfType<AudioManager>().Play("Melee");
         }
     }
 
@@ -265,6 +334,10 @@ public class Player : MonoBehaviour
     {
         //FindObjectOfType<AudioManager>().Play("Hit");
         health += damage;
+        if(health > maxHealth)
+        {
+            health = maxHealth;
+        }
         healthBar.SetHealth(health, maxHealth);
 
         //Heal Animation

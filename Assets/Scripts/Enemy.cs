@@ -8,6 +8,7 @@ public class Enemy : MonoBehaviour
     public GameObject bulletPrefab;
     public GameObject melee;
     public Rigidbody2D rb;
+    public Rigidbody2D rbFirePoint;
 
     public int level = 1;
     public int maxHealth = 10;
@@ -31,6 +32,10 @@ public class Enemy : MonoBehaviour
     public float cooldown;
 
     GameObject target;
+
+    public Animator animator;
+    public int lastDirection = 3;
+
     void Start()
     {
         target = FindObjectOfType<Player>().gameObject;
@@ -48,6 +53,10 @@ public class Enemy : MonoBehaviour
             attackRange = 2;
             minRange = 1;
         }
+        for (int i = 1; i <= level; i++)
+        {
+            LevelUp();
+        }
     }
 
     private void Update()
@@ -58,7 +67,7 @@ public class Enemy : MonoBehaviour
 
             Vector3 direction = target.transform.position - transform.position;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
-            rb.rotation = angle;
+            rbFirePoint.rotation = angle;
             direction.Normalize();
             movement = direction;
         }
@@ -67,7 +76,52 @@ public class Enemy : MonoBehaviour
             movement = Vector2.zero;
         }
 
-        if(fireRate > cooldown)
+        animator.SetFloat("Horizontal", movement.x);
+        animator.SetFloat("Vertical", movement.y);
+        animator.SetFloat("Speed", movement.sqrMagnitude);
+
+        if (movement.x > 0.01f)
+        {
+            lastDirection = 2;
+            //animator.SetBool("Right", true);
+        }
+        else if (movement.x < -0.01f)
+        {
+            lastDirection = 4;
+            //animator.SetBool("Right", false);
+        }
+        else if (movement.y > 0.01f)
+        {
+            lastDirection = 1;
+            //animator.SetBool("Up", true);
+        }
+        else if (movement.y < -0.01f)
+        {
+            lastDirection = 3;
+            //animator.SetBool("Up", false);
+        }
+
+        switch (lastDirection)
+        {
+            case 1:
+                animator.SetBool("Right", false);
+                animator.SetBool("Up", true);
+                break;
+            case 2:
+                animator.SetBool("Up", true);
+                animator.SetBool("Right", true);
+                break;
+            case 3:
+                animator.SetBool("Right", true);
+                animator.SetBool("Up", false);
+                break;
+            case 4:
+                animator.SetBool("Up", false);
+                animator.SetBool("Right", false);
+                break;
+        }
+
+        if (fireRate > cooldown)
         {
             cooldown += Time.deltaTime;
         }
@@ -111,10 +165,12 @@ public class Enemy : MonoBehaviour
         if ((FindObjectOfType<Player>().transform.position - transform.position).magnitude <= minRange)
         {
             rb.MovePosition((Vector2)transform.position - movement * speed * Time.fixedDeltaTime);
+            rbFirePoint.MovePosition((Vector2)transform.position - movement * speed * Time.fixedDeltaTime);
         }
         else
         {
             rb.MovePosition((Vector2)transform.position + movement * speed * Time.fixedDeltaTime);
+            rbFirePoint.MovePosition((Vector2)transform.position + movement * speed * Time.fixedDeltaTime);
         }
     }
 
@@ -123,16 +179,18 @@ public class Enemy : MonoBehaviour
         if ((FindObjectOfType<Player>().transform.position - transform.position).magnitude <= minRange)
         {
             rb.MovePosition((Vector2)transform.position - movement * speed * Time.fixedDeltaTime);
+            rbFirePoint.MovePosition((Vector2)transform.position - movement * speed * Time.fixedDeltaTime);
         }
         else
         {
             rb.MovePosition((Vector2)transform.position + movement * speed * Time.fixedDeltaTime);
+            rbFirePoint.MovePosition((Vector2)transform.position + movement * speed * Time.fixedDeltaTime);
         }
     }
 
     public void AttackM()
     {
-        meleeHold = 0.5f;
+        meleeHold = 0.1f;
         melee.SetActive(true);
     }
 
@@ -152,6 +210,7 @@ public class Enemy : MonoBehaviour
         spriteRenderer.color = color;
 
         rb.AddForce(firePoint.up * bulletForce, ForceMode2D.Impulse);
+        FindObjectOfType<AudioManager>().Play("Fire");
     }
 
     void OnCollisionEnter2D(Collision2D other)
@@ -167,6 +226,7 @@ public class Enemy : MonoBehaviour
         if (collision.gameObject.tag == "MeleeAttack")
         {
             TakeDamage((int)FindObjectOfType<Player>().meleeDamage);
+            FindObjectOfType<AudioManager>().Play("Melee");
         }
 
         if(collision.gameObject.tag == "RangedAttack" || collision.gameObject.tag == "AOE")
@@ -185,6 +245,15 @@ public class Enemy : MonoBehaviour
         {
             Die();
         }
+    }
+
+    void LevelUp()
+    {
+        meleeDamage += 3f;
+        rangedDamage += 3f;
+        maxHealth = (int)(maxHealth * 1.25f);
+        health = maxHealth;
+        xpValue *= (int)(xpValue * 1.25f);
     }
 
     void Die()

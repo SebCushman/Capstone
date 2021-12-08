@@ -29,8 +29,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.25, z: 0}
   m_LocalScale: {x: 2.5, y: 0.12499999, z: 1.25}
   m_Children: []
-  m_Father: {fileID: 2855129294366397459}
-  m_RootOrder: 3
+  m_Father: {fileID: 2855129293607426946}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4189703564613574285
 SpriteRenderer:
@@ -110,6 +110,7 @@ GameObject:
   - component: {fileID: 2855129293607426946}
   - component: {fileID: 2855129293607426945}
   - component: {fileID: 8179267806254921667}
+  - component: {fileID: 1936075553448804868}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -127,7 +128,10 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 3683569633477660321}
+  - {fileID: 2855129295099272841}
+  - {fileID: 8141380726892109928}
   m_Father: {fileID: 2855129294366397459}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -198,6 +202,27 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
+--- !u!50 &1936075553448804868
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2855129293607426944}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 0
 --- !u!1 &2855129294366397458
 GameObject:
   m_ObjectHideFlags: 0
@@ -209,6 +234,7 @@ GameObject:
   - component: {fileID: 2855129294366397459}
   - component: {fileID: 2855129294366397460}
   - component: {fileID: 7917337320939457772}
+  - component: {fileID: 6075678685389924808}
   m_Layer: 0
   m_Name: Enemy Ranged
   m_TagString: Enemy
@@ -228,9 +254,6 @@ Transform:
   m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_Children:
   - {fileID: 2855129293607426946}
-  - {fileID: 2855129295099272841}
-  - {fileID: 3683569633477660321}
-  - {fileID: 8141380726892109928}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -254,7 +277,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &7917337320939457772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,7 +293,8 @@ MonoBehaviour:
   firePoint: {fileID: 3683569633477660321}
   bulletPrefab: {fileID: 5887166419376019586, guid: a792e87687ab86a4daf534ec547b3942, type: 3}
   melee: {fileID: 534897138002273838}
-  rb: {fileID: 0}
+  rb: {fileID: 2855129294366397460}
+  rbFirePoint: {fileID: 1936075553448804868}
   level: 1
   maxHealth: 10
   health: 0
@@ -284,6 +308,27 @@ MonoBehaviour:
   fireRate: 2
   meleeHold: 0
   cooldown: 0
+  animator: {fileID: 6075678685389924808}
+  lastDirection: 3
+--- !u!95 &6075678685389924808
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2855129294366397458}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 014e3a9630325124583eda886d7e7c6c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &2855129295099272840
 GameObject:
   m_ObjectHideFlags: 0
@@ -312,7 +357,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 0.3, y: 0.5, z: 1}
   m_Children: []
-  m_Father: {fileID: 2855129294366397459}
+  m_Father: {fileID: 2855129293607426946}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2855129295099272842
@@ -393,6 +438,6 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.25, z: 0}
   m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
   m_Children: []
-  m_Father: {fileID: 2855129294366397459}
-  m_RootOrder: 2
+  m_Father: {fileID: 2855129293607426946}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
