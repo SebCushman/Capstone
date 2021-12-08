@@ -203,7 +203,8 @@ public class Player : MonoBehaviour
             GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
             bullet.GetComponent<RangedAttack>().owner = this.gameObject;
             bullet.GetComponent<RangedAttack>().damage *= rangedDamage;
-            Shoot(30, Color.green, bullet);
+            //Shoot(30, Color.green, bullet);
+            Shoot(30, bullet);
             cooldown = 0;
         }
 
@@ -212,7 +213,8 @@ public class Player : MonoBehaviour
             GameObject wave = Instantiate(wavePrefab, firePoint.position, firePoint.rotation);
             wave.GetComponent<RangedAttack>().owner = this.gameObject;
             wave.GetComponent<RangedAttack>().damage *= rangedDamage;
-            ShootWave(20, Color.yellow, wave);
+            //ShootWave(20, Color.yellow, wave);
+            ShootWave(20, wave);
             waveCooldown = 0;
             Destroy(wave, 0.25f);
         }
@@ -222,7 +224,8 @@ public class Player : MonoBehaviour
             GameObject aoe = Instantiate(aoePrefab, mousePos, firePoint.rotation);
             aoe.GetComponent<RangedAttack>().owner = this.gameObject;
             aoe.GetComponent<RangedAttack>().damage *= rangedDamage;
-            ShootAOE(Color.yellow, aoe);
+            //ShootAOE(Color.yellow, aoe);
+            ShootAOE(aoe);
             //aoe.transform.localScale += new Vector3(0.2f, 0.2f, 0f);
             aoeCooldown = 0;
             Destroy(aoe, 1f);
@@ -261,12 +264,12 @@ public class Player : MonoBehaviour
         //firePoint.RotateAround(this.transform.position, new Vector3(0f, 1f, 0f), angle);
     }
 
-    void Shoot(float bulletForce, Color color, GameObject bullet)
+    void Shoot(float bulletForce, GameObject bullet)
     {
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
         SpriteRenderer spriteRenderer = bullet.GetComponent<SpriteRenderer>();
 
-        spriteRenderer.color = color;
+        //spriteRenderer.color = color;
 
         rb.AddForce(firePoint.up * bulletForce, ForceMode2D.Impulse);
         //rb.AddForce(mousePos * bulletForce, ForceMode2D.Impulse);
@@ -274,23 +277,23 @@ public class Player : MonoBehaviour
         FindObjectOfType<AudioManager>().Play("Fire");
     }
 
-    void ShootWave(float waveForce, Color color, GameObject wave)
+    void ShootWave(float waveForce, GameObject wave)
     {
         Rigidbody2D rb = wave.GetComponent<Rigidbody2D>();
         SpriteRenderer spriteRenderer = wave.GetComponent<SpriteRenderer>();
 
-        spriteRenderer.color = color;
+        //spriteRenderer.color = color;
 
         rb.AddForce(firePoint.up * waveForce, ForceMode2D.Impulse);
         FindObjectOfType<AudioManager>().Play("Wave");
     }
 
-    void ShootAOE(Color color, GameObject aoe)
+    void ShootAOE(GameObject aoe)
     {
         Rigidbody2D rb = aoe.GetComponent<Rigidbody2D>();
         SpriteRenderer spriteRenderer = aoe.GetComponent<SpriteRenderer>();
 
-        spriteRenderer.color = color;
+        //spriteRenderer.color = color;
 
         FindObjectOfType<AudioManager>().Play("AOE");
 
