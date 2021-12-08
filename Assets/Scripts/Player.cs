@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -50,6 +51,11 @@ public class Player : MonoBehaviour
 
     public int lastDirection = 3;
 
+    public TMP_Text meleeDamText;
+    public TMP_Text rangedDamText;
+    public TMP_Text HPText;
+    public TMP_Text XPText;
+
     private void Start()
     {
         health = maxHealth;
@@ -68,6 +74,11 @@ public class Player : MonoBehaviour
         healRate = 5.0f;
         healCooldown = healRate;
         healBar.SetCooldown(healRate);
+
+        meleeDamText.text = $"Melee Damage: {meleeDamage}";
+        rangedDamText.text = $"Ranged Damage: {rangedDamage}";
+        HPText.text = $"HP: {health}/{maxHealth}";
+        XPText.text = $"XP: {currentXP}/{toLevel}";
 
         for(int i = 1; i < 20; i++)
         {
@@ -88,9 +99,10 @@ public class Player : MonoBehaviour
         animator.SetFloat("Vertical", movement.y);
         animator.SetFloat("Speed", movement.sqrMagnitude);
 
-        
+        HPText.text = $"HP: {health}/{maxHealth}";
+        XPText.text = $"XP: {currentXP}/{toLevel}";
 
-        if(movement.x > 0.01f)
+        if (movement.x > 0.01f)
         {
             lastDirection = 2;
             //animator.SetBool("Right", true);
@@ -301,6 +313,11 @@ public class Player : MonoBehaviour
         healthBar.SetHealth(health, maxHealth);
         healthBar.SetmaxHealth(maxHealth);
         xpBar.levelText.text = level.ToString();
+
+        meleeDamText.text = $"Melee Damage: {meleeDamage}";
+        rangedDamText.text = $"Ranged Damage: {rangedDamage}";
+        HPText.text = $"HP: {health}/{maxHealth}";
+        XPText.text = $"XP: {currentXP}/{toLevel}";
     }
 
     void OnCollisionEnter2D(Collision2D other)
